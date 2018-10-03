@@ -15,12 +15,11 @@ public:
 		};
 		static std::optional<Declaration> fromDeclarationString(const std::string& declstr);
 		Type type;
-		std::string rbf_filename;
+		DOSPath rbf_path;
 		size_t size;
 	};
 	std::string name;
 	std::optional<Declaration> declaration;
-	//std::string declaration;
 	std::string filter;
 	std::string range;
 	std::string datatype;

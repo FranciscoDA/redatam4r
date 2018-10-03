@@ -40,7 +40,7 @@ std::string fread_string(std::istream& stream) {
 
 size_t fread_decimal(std::istream& stream, size_t digits) {
 	size_t result = 0;
-	for (int i = 0; i < digits; ++i)
+	for (size_t i = 0; i < digits; ++i)
 		result = result * 10 + (fread_uint8_t(stream)-'0');
 	return result;
 }

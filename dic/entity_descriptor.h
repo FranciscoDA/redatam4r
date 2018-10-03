@@ -3,6 +3,7 @@
 
 #include <string>
 #include <array>
+#include "../util.h"
 
 class EntityDescriptor {
 public:
@@ -10,7 +11,7 @@ public:
 	std::string name2;
 	std::string parent;
 	std::string description;
-	std::string ptr_filename;
+	DOSPath ptr_path;
 
 	uint16_t unknown1;
 

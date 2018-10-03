@@ -13,7 +13,7 @@ EntityDescriptor EntityDescriptor::fread(std::istream& stream, bool is_root) {
 		d.name2 = fread_string(stream);
 	d.parent       = fread_string(stream);
 	d.description  = fread_string(stream);
-	d.ptr_filename = fread_string(stream);
+	d.ptr_path = DOSPath(fread_string(stream));
 	d.unknown1     = fread_uint16_t(stream);
 	d.id_varname    = fread_string(stream);
 	d.name_varname  = fread_string(stream);
@@ -37,7 +37,7 @@ std::ostream& operator<<(std::ostream& stream, const EntityDescriptor& d) {
 		<< "\nName2: " << d.name2
 		<< "\nParent: " << d.parent
 		<< "\nDescription: " << d.description
-		<< "\nPTR file: " << d.ptr_filename
+		<< "\nPTR file: " << d.ptr_path
 		<< "\nVar ID: " << d.id_varname
 		<< "\nVar Name: " << d.name_varname
 		<< "\nDocumentation: " << d.documentation

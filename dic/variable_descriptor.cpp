@@ -18,7 +18,7 @@ std::optional<VariableDescriptor::Declaration> VariableDescriptor::Declaration::
 		else if (match[1] == "PCK") t = Declaration::Type::PCK;
 		std::string p = match[2];
 		size_t s = std::stoi(match[3]);
-		return Declaration{t,p,s};
+		return Declaration{t, p, s};
 	}
 	else {
 		return std::nullopt;
@@ -44,7 +44,7 @@ VariableDescriptor VariableDescriptor::fread(std::istream& stream) {
 std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d) {
 	return stream
 		<< "Name: " << d.name
-		<< "\nDeclaration: " << (d.declaration ? d.declaration->rbf_filename : "(null)")
+		<< "\nDeclaration: " << (d.declaration ? d.declaration->rbf_path : "(null)")
 		<< "\nFilter: " << d.filter
 		<< "\nRange: " << d.range
 		<< "\nDatatype: " << d.datatype
