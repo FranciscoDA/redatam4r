@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	UnixPath dic_path(argv[1]);
-	std::fstream dic_file(dic_path, std::ios_base::in|std::ios_base::binary);
+	std::fstream dic_file(dic_path.as_string(), std::ios_base::in|std::ios_base::binary);
 	std::cout << "Reading From: " << dic_path << std::endl;
 	if (!dic_file.good()) {
 		std::cout << "Cannot read dic file!" << std::endl;
@@ -33,13 +33,15 @@ int main(int argc, char** argv) {
 			<< "===ENTITY (" << entity_count << ") @ " << entity_pos << "===\n"
 			<< entity << std::endl;
 		if (!entity.ptr_path.empty()) {
-			auto ptr_real_basename = locate_icase(dic_path.dir(), entity.ptr_path.basename());
+			auto ptr_real_basename = locate_icase(dic_path.dir().as_string(), entity.ptr_path.basename());
 			if (!ptr_real_basename.empty()) {
 				auto ptr_real_path = dic_path.dir() + ptr_real_basename;
-				std::fstream ptr_file(ptr_real_path, std::ios_base::in|std::ios_base::binary);
-				ptr_file.seekg(0, std::ios_base::end);
-				size_t ptr_file_sz = ptr_file.tellg();
-				std::cout << "Number of entities: " << (ptr_file_sz/sizeof(uint32_t)-1) << std::endl;
+				uint32_t max = 0;
+				std::fstream ptr_file(ptr_real_path.as_string(), std::ios_base::in|std::ios_base::binary);
+				for(uint32_t i = fread_uint32_t(ptr_file); !ptr_file.eof(); i = fread_uint32_t(ptr_file)) {
+					max = i;
+				}
+				std::cout << "Number of entities: " << max << std::endl;
 			}
 		}
 		for (size_t i = 0; i < entity.num_vars; ++i) {
@@ -48,10 +50,10 @@ int main(int argc, char** argv) {
 				<< "---Variable(" << i << ")---\n"
 				<< var << std::endl;
 			if (var.declaration) {
-				auto rbf_real_basename = locate_icase(dic_path.dir(), var.declaration->rbf_path.basename());
+				auto rbf_real_basename = locate_icase(dic_path.dir().as_string(), var.declaration->rbf_path.basename());
 				if (!rbf_real_basename.empty()) {
 					auto rbf_real_path = dic_path.dir() + rbf_real_basename;
-					std::fstream rbf_file(rbf_real_path, std::ios_base::in|std::ios_base::binary);
+					std::fstream rbf_file(rbf_real_path.as_string(), std::ios_base::in|std::ios_base::binary);
 					rbf_file.seekg(0, std::ios_base::end);
 					size_t rbf_file_sz = rbf_file.tellg();
 					std::cout << "Number of instances: " << (rbf_file_sz / var.declaration->size) << std::endl;

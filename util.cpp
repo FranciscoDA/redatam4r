@@ -24,69 +24,27 @@ std::string locate_icase(const std::string& dir, const std::string& base) {
 	return result;
 }
 
-DOSPath::DOSPath(const std::string& s) : raw_path(s) {}
-DOSPath::DOSPath(const char* s) : raw_path(s) {}
-DOSPath::DOSPath() : raw_path() {}
-
-std::string DOSPath::basename() const {
-	size_t i = this->raw_path.rfind('\\');
-	return this->raw_path.substr(i+1, std::string::npos);
-}
-DOSPath DOSPath::dir() const {
-	size_t i = this->raw_path.rfind('\\');
-	return {this->raw_path.substr(0, i)};
-}
-DOSPath::operator std::string() const {
-	return this->raw_path;
-}
-DOSPath& DOSPath::operator+=(const std::string& component) {
-	if (empty()) {
-		this->raw_path += ".";
-	}
-	this->raw_path += '\\';
-	this->raw_path += component;
-	return *this;
-}
-DOSPath DOSPath::operator+(const std::string& component) const {
-	DOSPath copy = *this;
-	return copy += component;
-}
-bool DOSPath::empty() const {
-	return this->raw_path.empty();
-}
-std::ostream& operator<<(std::ostream& stream, const DOSPath& p) {
+std::ostream& operator<<(std::ostream& stream, const Path& p) {
 	return stream << p.raw_path;
 }
-
-UnixPath::UnixPath(const std::string& s) : raw_path(s) {}
-UnixPath::UnixPath(const char* s) : raw_path(s) {}
-UnixPath::UnixPath() {}
-std::string UnixPath::basename() const {
-	size_t i = this->raw_path.rfind('/');
-	return this->raw_path.substr(i+1, std::string::npos);
+Path::Path(const std::string& s, char sep) : raw_path(s), sep(sep) {}
+Path::Path(const char* s, char sep) : raw_path(s), sep(sep) {}
+std::string Path::basename() const {
+	size_t i = raw_path.rfind(sep);
+	return raw_path.substr(i+1, std::string::npos);
 }
-UnixPath UnixPath::dir() const {
-	size_t i = this->raw_path.rfind('/');
-	return {this->raw_path.substr(0, i)};
+Path Path::dir() const {
+	size_t i = raw_path.rfind(sep);
+	return Path(raw_path.substr(0, i), sep);
 }
-UnixPath::operator std::string() const {
-	return this->raw_path;
-}
-UnixPath& UnixPath::operator+=(const std::string& component) {
-	if (empty()) {
-		this->raw_path += ".";
-	}
-	this->raw_path += '/';
-	this->raw_path += component;
+const std::string& Path::as_string() const { return raw_path; }
+Path& Path::operator+=(const std::string& component) {
+	(raw_path += sep) += component;
 	return *this;
 }
-UnixPath UnixPath::operator+(const std::string& component) const {
-	UnixPath copy = *this;
+Path Path::operator+(const std::string& component) const {
+	Path copy = *this;
 	return copy += component;
 }
-bool UnixPath::empty() const {
-	return this->raw_path.empty();
-}
-std::ostream& operator<<(std::ostream& stream, const UnixPath& p) {
-	return stream << p.raw_path;
-}
+bool Path::empty() const { return raw_path.empty(); }
+

@@ -16,39 +16,36 @@ std::ostream& operator<<(std::ostream& stream, const std::array<T, N>& arr) {
 	return stream << std::setbase(10) << std::setfill('0');
 }
 
-class DOSPath {
+class Path {
 public:
-	DOSPath(const std::string& s);
-	DOSPath(const char* s);
-	DOSPath();
+	Path() = delete;
 	std::string basename() const;
-	DOSPath dir() const;
-	operator std::string() const;
-	DOSPath& operator+=(const std::string& component);
-	DOSPath operator+(const std::string& component) const;
+	Path dir() const;
+	const std::string& as_string() const;
+	Path& operator+=(const std::string& component);
+	Path operator+(const std::string& component) const;
 	bool empty() const;
-	friend std::ostream& operator<<(std::ostream&, const DOSPath&);
+	friend std::ostream& operator<<(std::ostream& stream, const Path& p);
+protected:
+	Path(const std::string& s, char sep);
+	Path(const char* s, char sep);
 private:
 	std::string raw_path;
+	char sep;
 };
-std::ostream& operator<<(std::ostream& stream, const DOSPath& p);
+std::ostream& operator<<(std::ostream& stream, const Path& p);
 
-class UnixPath {
+class DOSPath : public Path {
 public:
-	UnixPath(const std::string& s);
-	UnixPath(const char* s);
-	UnixPath();
-	std::string basename() const;
-	UnixPath dir() const;
-	operator std::string() const;
-	UnixPath& operator+=(const std::string& component);
-	UnixPath operator+(const std::string& component) const;
-	bool empty() const;
-	friend std::ostream& operator<<(std::ostream&, const UnixPath&);
-private:
-	std::string raw_path;
+	DOSPath(const std::string& s) : Path(s, '\\') {}
+	DOSPath(const char* s) : Path(s, '\\') {}
+	DOSPath() : Path("", '\\') {}
 };
-std::ostream& operator<<(std::ostream& stream, const UnixPath& p);
-
+class UnixPath : public Path {
+public:
+	UnixPath(const std::string& s) : Path(s, '/') {}
+	UnixPath(const char* s) : Path(s, '/') {}
+	UnixPath() : Path("", '/') {}
+};
 
 #endif

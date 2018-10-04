@@ -14,13 +14,13 @@ $(objdir)/primitives.o: primitives.cpp primitives.h
 $(objdir)/util.o: util.cpp util.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(objdir)/entity_descriptor.o: dic/entity_descriptor.cpp dic/entity_descriptor.h
+$(objdir)/entity_descriptor.o: dic/entity_descriptor.cpp dic/entity_descriptor.h util.h primitives.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(objdir)/variable_descriptor.o: dic/variable_descriptor.cpp dic/variable_descriptor.h
+$(objdir)/variable_descriptor.o: dic/variable_descriptor.cpp dic/variable_descriptor.h util.h primitives.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(objdir)/dictionary_descriptor.o: dic/dictionary_descriptor.cpp dic/dictionary_descriptor.h
+$(objdir)/dictionary_descriptor.o: dic/dictionary_descriptor.cpp dic/dictionary_descriptor.h util.h primitives.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 $(objdir)/main.o: main.cpp
