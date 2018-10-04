@@ -12,11 +12,11 @@ $ make
 
 ### Uso
 
-Actualmente el ejecutable es lee el archivo de diccionario casi en su totalidad
+Actualmente el ejecutable lee e interpreta el archivo de diccionario casi en su totalidad
 y escribe los metadatos en la salida estándar:
 
 ```sh
-redatam4r [path_al_archivo_diccionario.dic]
+$ redatam4r [path_al_archivo_diccionario.dic]
 ```
 
 ### Notas
@@ -29,5 +29,5 @@ bajo la ley de secreto estadístico.
 
 ### Referencias
 
-De Grande, P. *El Formato REDATAM* (2015) [(PDF)](https://estudiosdemograficosyurbanos.colmex.mx/index.php/edu/article/view/15/pdf)
+De Grande, P. *El Formato REDATAM*. Estudios Demográficos y Urbanos (2015) [(PDF)](https://estudiosdemograficosyurbanos.colmex.mx/index.php/edu/article/view/15/pdf)
 
