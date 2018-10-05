@@ -1,0 +1,9 @@
+CXX_STD = CXX17
+PKG_CXXFLAGS = -Wall
+PKG_CPPFLAGS = -I/usr/include/R/
+
+objdir = ../objs
+
+SOURCES = $(wildcard *.cpp dic/*.cpp)
+OBJECTS = $(SOURCES:.cpp=.o)
+

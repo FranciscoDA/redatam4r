@@ -1,13 +1,13 @@
 CXX=g++
-CXXFLAGS=-std=c++17 -g3 -Wall
+CXXFLAGS=-std=c++17 -g3 -Wall -I/usr/include/R/
 objdir=objs
 srcdir=src
 
 objects = $(addprefix $(objdir)/,primitives.o util.o entity_descriptor.o\
-	variable_descriptor.o dictionary_descriptor.o main.o)
+	variable_descriptor.o dictionary_descriptor.o)
 
-redatam4r: $(objects)
-	$(CXX) $(CXXFLAGS) -o $@ $(objects)
+redatam4r: $(objects) $(objdir)/main.o $(objdir)/libredatam.o
+	$(CXX) $(CXXFLAGS) -o $@ $(objects) $(objdir)/main.o
 
 $(objdir)/primitives.o: $(srcdir)/primitives.cpp $(srcdir)/primitives.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $< 
@@ -27,6 +27,8 @@ $(objdir)/dictionary_descriptor.o: $(srcdir)/dic/dictionary_descriptor.cpp $(src
 $(objdir)/main.o: $(srcdir)/main.cpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
+$(objdir)/libredatam.o: $(srcdir)/libredatam.cpp $(srcdir)/libredatam.h
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 .PHONY: clean
 clean:

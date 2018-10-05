@@ -35,6 +35,7 @@ public:
 	static VariableDescriptor fread(std::istream& stream);
 };
 std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d);
+std::ostream& operator<<(std::ostream& stream, const VariableDescriptor::Declaration& d);
 
 #endif
 

@@ -1,0 +1,13 @@
+Package: redatam4r
+Version: 0.1
+Title: Functions for working with REDATAM censal databases
+Authors@R: c(
+	person(given = "Francisco", family = "Altoe", role = c("aut", "cre"), email = "franciscoda@outlook.com")
+	)
+Description: Functions for working with REDATAM censal databases
+License: GPL-3
+LazyLoad: yes
+NeedsCompilation: yes
+Author: Francisco Altoe [aut, cre]
+Maintainer: Francisco Altoe <franciscoda@outlook.com>
+

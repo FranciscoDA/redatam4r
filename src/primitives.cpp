@@ -7,15 +7,12 @@
 uint8_t fread_uint8_t(std::istream& stream) {
 	return stream.get();
 }
-
 uint16_t fread_uint16_t(std::istream& stream) {
 	return stream.get() + (stream.get() << 8);
 }
-
 uint32_t fread_uint32_t(std::istream& stream) {
 	return stream.get() + (stream.get() << 8) + (stream.get() << 16) + (stream.get() << 24);
 }
-
 std::string fread_string(std::istream& stream) {
 	size_t sz = fread_uint16_t(stream);
 	std::string result;
@@ -36,6 +33,23 @@ std::string fread_string(std::istream& stream) {
 			result += static_cast<char>(c);
 	}
 	return result;
+}
+
+std::istream& fread_uint8_t(uint8_t& dst, std::istream& stream) {
+	dst = fread_uint8_t(stream);
+	return stream;
+}
+std::istream& fread_uint16_t(uint16_t& dst, std::istream& stream) {
+	dst = fread_uint16_t(stream);
+	return stream;
+}
+std::istream& fread_uint32_t(uint32_t& dst, std::istream& stream) {
+	dst = fread_uint32_t(stream);
+	return stream;
+}
+std::istream& fread_string(std::string& dst, std::istream& stream) {
+	dst.assign(fread_string(stream));
+	return stream;
 }
 
 size_t fread_decimal(std::istream& stream, size_t digits) {

@@ -6,6 +6,12 @@ A través de este proyecto se pretende:
 
 ### Compilación
 
+Para compilar el paquete se debe ejecutar el siguiente comando desde el directorio superior:
+```sh
+$ R CMD check redatam4r
+```
+
+Para compilar el ejecutable de prueba (opcional) se debe ejecutar el siguiente comando desde este directorio:
 ```sh
 $ make
 ```

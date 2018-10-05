@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 				auto ptr_real_path = dic_path.dir() + ptr_real_basename;
 				uint32_t max = 0;
 				std::fstream ptr_file(ptr_real_path.as_string(), std::ios_base::in|std::ios_base::binary);
-				for(uint32_t i = fread_uint32_t(ptr_file); !ptr_file.eof(); i = fread_uint32_t(ptr_file)) {
+				for(uint32_t i = 0; fread_uint32_t(i, ptr_file);) {
 					max = i;
 				}
 				std::cout << "Number of entities: " << max << std::endl;

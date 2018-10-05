@@ -41,10 +41,40 @@ VariableDescriptor VariableDescriptor::fread(std::istream& stream) {
 	return d;
 }
 
+std::ostream& operator<<(std::ostream& stream, const VariableDescriptor::Declaration& d) {
+	stream << d.rbf_path << " ";
+	switch(d.type) {
+		case VariableDescriptor::Declaration::Type::BIN:
+			stream << "BIN";
+			break;
+		case VariableDescriptor::Declaration::Type::CHR:
+			stream << "CHR";
+			break;
+		case VariableDescriptor::Declaration::Type::DBL:
+			stream << "DBL";
+			break;
+		case VariableDescriptor::Declaration::Type::INT:
+			stream << "INT";
+			break;
+		case VariableDescriptor::Declaration::Type::LNG:
+			stream << "LNG";
+			break;
+		case VariableDescriptor::Declaration::Type::PCK:
+			stream << "PCK";
+			break;
+		default:
+			stream << "???";
+	}
+	return stream << " (" << d.size << ")";
+}
+
 std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d) {
+	stream << "Name: " << d.name << "\nDeclaration: ";
+	if (d.declaration)
+		stream << *d.declaration;
+	else
+		stream << "NULL";
 	return stream
-		<< "Name: " << d.name
-		<< "\nDeclaration: " << (d.declaration ? d.declaration->rbf_path : "(null)")
 		<< "\nFilter: " << d.filter
 		<< "\nRange: " << d.range
 		<< "\nDatatype: " << d.datatype
