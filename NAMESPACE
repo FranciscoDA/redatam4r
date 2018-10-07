@@ -3,4 +3,5 @@ useDynLib("redatam4r", .registration = TRUE, .fixes = "R_")
 export(read.redatam, documentation, description)
 
 S3method(description, redatam.entity)
+S3method(description, redatam.variable)
 S3method(documentation, redatam.entity)

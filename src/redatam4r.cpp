@@ -25,15 +25,17 @@ SEXP read_redatam(SEXP dic_path_in) {
 	PROTECT(ans_names = allocVector(STRSXP, root_entity.num_entities-1));
 	classgets(ans, mkString("redatam.database"));
 
-	SEXP entity_description_rsymbol, entity_documentation_rsymbol, entity_class_rvector;
-	PROTECT(entity_description_rsymbol = mkString("description"));
-	PROTECT(entity_documentation_rsymbol = mkString("documentation"));
+	SEXP description_rsymbol, documentation_rsymbol, entity_class_rvector, variable_class_rvector;
+	PROTECT(description_rsymbol = mkString("description"));
+	PROTECT(documentation_rsymbol = mkString("documentation"));
 
 	PROTECT(entity_class_rvector = allocVector(STRSXP, 2));
 	SET_STRING_ELT(entity_class_rvector, 0, mkChar("redatam.entity"));
 	SET_STRING_ELT(entity_class_rvector, 1, mkChar("data.frame"));
 
-	std::string last_entity_name = root_entity.name1;
+	PROTECT(variable_class_rvector = allocVector(STRSXP, 1));
+	SET_STRING_ELT(variable_class_rvector, 0, mkChar("redatam.variable"));
+
 	for (int entity_count = 1; entity_count < root_entity.num_entities; ++entity_count) {
 		auto entity = EntityDescriptor::fread(dic_file, false);
 		SET_STRING_ELT(ans_names, entity_count-1, mkChar(entity.name1.c_str()));
@@ -48,11 +50,9 @@ SEXP read_redatam(SEXP dic_path_in) {
 				num_instances = fread_uint32_t(ptr_file);
 				ptr_file.seekg(0, std::ios_base::beg);
 
-				SEXP current_entity, names, rownames;
-				PROTECT(current_entity = allocVector(VECSXP, 1));
-				PROTECT(names = allocVector(STRSXP, 1));
-
-				SEXP column;
+				SEXP current_entity, names, rownames, column;
+				PROTECT(current_entity = allocVector(VECSXP, entity.num_vars+1));
+				PROTECT(names = allocVector(STRSXP, entity.num_vars+1));
 				PROTECT(column = allocVector(INTSXP, num_instances));
 
 				uint32_t prev_n;
@@ -66,8 +66,10 @@ SEXP read_redatam(SEXP dic_path_in) {
 					}
 					prev_n = next_n;
 				}
+				classgets(column, variable_class_rvector);
+				setAttrib(column, description_rsymbol, mkString(("Parent instance row in " + entity.parent).c_str()));
 				SET_VECTOR_ELT(current_entity, 0, column);
-				SET_STRING_ELT(names, 0, mkChar((last_entity_name + "_id").c_str()));
+				SET_STRING_ELT(names, 0, mkChar((entity.parent + "_id").c_str()));
 
 				PROTECT(rownames = allocVector(INTSXP, num_instances));
 				for (int z = 0; z < num_instances; ++z)
@@ -76,13 +78,14 @@ SEXP read_redatam(SEXP dic_path_in) {
 				classgets(current_entity, entity_class_rvector);
 				namesgets(current_entity, names);
 				setAttrib(current_entity, R_RowNamesSymbol, rownames);
-				setAttrib(current_entity, entity_description_rsymbol, mkString(entity.description.c_str()));
-				setAttrib(current_entity, entity_documentation_rsymbol, mkString(entity.documentation.c_str()));
+				setAttrib(current_entity, description_rsymbol, mkString(entity.description.c_str()));
+				setAttrib(current_entity, documentation_rsymbol, mkString(entity.documentation.c_str()));
 				SET_VECTOR_ELT(ans, entity_count-1, current_entity);
 
-				UNPROTECT(4); // names, rownames, column, current_entity
+				UNPROTECT(4); // rownames, column, names, current_entity
 				for (size_t i = 0; i < entity.num_vars; ++i) {
 					VariableDescriptor var = VariableDescriptor::fread(dic_file);
+					PROTECT(column = allocVector(INTSXP, num_instances));
 					if (var.declaration) {
 						auto rbf_real_basename = locate_icase(dic_path.dir().as_string(), var.declaration->rbf_path.basename());
 						if (!rbf_real_basename.empty()) {
@@ -92,14 +95,18 @@ SEXP read_redatam(SEXP dic_path_in) {
 							size_t rbf_file_sz = rbf_file.tellg();
 						}
 					}
+					SET_VECTOR_ELT(current_entity, i+1, column);
+					SET_STRING_ELT(names, i+1, mkChar(var.name.c_str()));
+					classgets(column, variable_class_rvector);
+					setAttrib(column, description_rsymbol, mkString(var.description.c_str()));
+					UNPROTECT(1); // column
 				}
 			}
 		}
-		last_entity_name = entity.name1;
 	}
 
 	namesgets(ans, ans_names);
-	UNPROTECT(5); // ans, ans_names, entity_description_rsymbol, entity_documentation_rsymbol, entity_class_vector
+	UNPROTECT(6); // variable_class_rvector, entity_class_rvector, documentation_rsymbol, description_rsymbol, ans_names, ans
 
 	return ans;
 }

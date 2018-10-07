@@ -8,3 +8,4 @@ documentation.redatam.entity <- function(x) attr(x, "documentation")
 description <- function(x, ...) UseMethod("description")
 
 description.redatam.entity <- function(x) attr(x, "description")
+description.redatam.variable <- function(x) attr(x, "description")

@@ -27,9 +27,11 @@ las variables de la entidad, y cada fila será una instancia de esa entidad. La
 primer columna es especial en el sentido de que se corresponde con el número de
 fila de la entidad de nivel superior.
 
-Algunos metadatos de los objetos de entidades pueden ser consultados mediante los
-métodos `description` y `documentation`.
+Todas las variables son una columna dentro del dataframe de la entidad que las
+contiene. La clase del vector de una variable es `redatam.variable`.
 
+Algunos metadatos de los objetos de entidades y variables pueden ser consultados
+mediante los métodos `description` y `documentation`.
 
 Ejemplo de uso:
 ```
@@ -45,6 +47,9 @@ Ejemplo de uso:
 
 > description(a$DPTO)
 [1] "Departamento / Partido"
+
+> description(a$HOGAR$H23)
+[1] "Antiguedad de la vivienda"
 ```
 
 ### Notas
