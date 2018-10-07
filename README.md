@@ -13,13 +13,27 @@ $ R CMD INSTALL redatam4r
 
 ### Uso
 
-La única función expuesta en el paquete es `read.redatam`, la cual acepta un path
-al archivo diccionario de la base de datos. La función devuelve un objeto
-cuyos nombres de claves serán los identificadores de las entidades. Cada miembro
-del objeto raíz es, a su vez, un data.frame que contiene cada variable de la entidad
-en sus columnas. Se agrega, además, una columna adicional para indicar el número
-de fila de la instancia de la entidad padre dentro del dataframe correspondiente.
+La función principal expuesta en el paquete es `read.redatam`, la cual acepta un path
+al archivo diccionario de la base de datos.
+
+`read.redatam` devuelve un objeto de clase `redatam.database`. Los elementos nombrados
+de este objeto serán las entidades de la base de datos. Los nombres de los elementos
+serán sus identificadores dentro de la base de datos.
+
+Las entidades de la base de datos se representan como objetos de clase `redatam.entity`
+y además heredan a `data.frame`. Los objetos `redatam.entity` contienen atributos
+especiales con metadatos de las entidades. Las columnas del dataframe serán
+las variables de la entidad, y cada fila será una instancia de esa entidad. La
+primer columna es especial en el sentido de que se corresponde con el número de
+fila de la entidad de nivel superior.
+
+Algunos metadatos de los objetos de entidades pueden ser consultados mediante los
+métodos `description` y `documentation`.
+
+
+Ejemplo de uso:
 ```
+> library(redatam4r)
 > a <- read.redatam('/path/al/diccionario.dic')
 > a$DPTO
 
@@ -28,6 +42,9 @@ de fila de la instancia de la entidad padre dentro del dataframe correspondiente
 2      1    2    4    9
 3      1    1   20    3
 ...
+
+> description(a$DPTO)
+[1] "Departamento / Partido"
 ```
 
 ### Notas

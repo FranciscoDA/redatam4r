@@ -1,4 +1,4 @@
-#include "libredatam.h"
+#include "redatam4r.h"
 #include <R.h>
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>

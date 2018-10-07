@@ -7,7 +7,7 @@
 #include "dic/dictionary_descriptor.h"
 #include "dic/entity_descriptor.h"
 #include "dic/variable_descriptor.h"
-#include "libredatam.h"
+#include "redatam4r.h"
 #include <R.h>
 
 extern "C" {
@@ -24,6 +24,14 @@ SEXP read_redatam(SEXP dic_path_in) {
 	PROTECT(ans = allocVector(VECSXP, root_entity.num_entities-1));
 	PROTECT(ans_names = allocVector(STRSXP, root_entity.num_entities-1));
 	classgets(ans, mkString("redatam.database"));
+
+	SEXP entity_description_rsymbol, entity_documentation_rsymbol, entity_class_rvector;
+	PROTECT(entity_description_rsymbol = mkString("description"));
+	PROTECT(entity_documentation_rsymbol = mkString("documentation"));
+
+	PROTECT(entity_class_rvector = allocVector(STRSXP, 2));
+	SET_STRING_ELT(entity_class_rvector, 0, mkChar("redatam.entity"));
+	SET_STRING_ELT(entity_class_rvector, 1, mkChar("data.frame"));
 
 	std::string last_entity_name = root_entity.name1;
 	for (int entity_count = 1; entity_count < root_entity.num_entities; ++entity_count) {
@@ -50,10 +58,10 @@ SEXP read_redatam(SEXP dic_path_in) {
 				uint32_t prev_n;
 				uint32_t next_n;
 				int parent_id = 0;
-				fread_uint32_t(prev_n, ptr_file);
+				fread_uint32_t(prev_n, ptr_file); // always reads 0 at offset 0
 				while (fread_uint32_t(next_n, ptr_file)) {
 					++parent_id;
-					for (size_t k = prev_n; k < next_n; ++k) {
+					for (uint32_t k = prev_n; k < next_n; ++k) {
 						SET_INTEGER_ELT(column, k, parent_id);
 					}
 					prev_n = next_n;
@@ -65,9 +73,11 @@ SEXP read_redatam(SEXP dic_path_in) {
 				for (int z = 0; z < num_instances; ++z)
 					SET_INTEGER_ELT(rownames, z, z+1);
 
-				classgets(current_entity, mkString("data.frame"));
+				classgets(current_entity, entity_class_rvector);
 				namesgets(current_entity, names);
 				setAttrib(current_entity, R_RowNamesSymbol, rownames);
+				setAttrib(current_entity, entity_description_rsymbol, mkString(entity.description.c_str()));
+				setAttrib(current_entity, entity_documentation_rsymbol, mkString(entity.documentation.c_str()));
 				SET_VECTOR_ELT(ans, entity_count-1, current_entity);
 
 				UNPROTECT(4); // names, rownames, column, current_entity
@@ -89,7 +99,7 @@ SEXP read_redatam(SEXP dic_path_in) {
 	}
 
 	namesgets(ans, ans_names);
-	UNPROTECT(2); // ans, ans_names
+	UNPROTECT(5); // ans, ans_names, entity_description_rsymbol, entity_documentation_rsymbol, entity_class_vector
 
 	return ans;
 }
