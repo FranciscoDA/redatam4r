@@ -8,21 +8,26 @@ A través de este proyecto se pretende:
 
 Para compilar el paquete se debe ejecutar el siguiente comando desde el directorio superior:
 ```sh
-$ R CMD check redatam4r
-```
-
-Para compilar el ejecutable de prueba (opcional) se debe ejecutar el siguiente comando desde este directorio:
-```sh
-$ make
+$ R CMD INSTALL redatam4r
 ```
 
 ### Uso
 
-Actualmente el ejecutable lee e interpreta el archivo de diccionario casi en su totalidad
-y escribe los metadatos en la salida estándar:
+La única función expuesta en el paquete es `read.redatam`, la cual acepta un path
+al archivo diccionario de la base de datos. La función devuelve un objeto
+cuyos nombres de claves serán los identificadores de las entidades. Cada miembro
+del objeto raíz es, a su vez, un data.frame que contiene cada variable de la entidad
+en sus columnas. Se agrega, además, una columna adicional para indicar el número
+de fila de la instancia de la entidad padre dentro del dataframe correspondiente.
+```
+> a <- read.redatam('/path/al/diccionario.dic')
+> a$DPTO
 
-```sh
-$ redatam4r [path_al_archivo_diccionario.dic]
+ PROV_id var1 var2 var3
+1      1    1    1    1
+2      1    2    4    9
+3      1    1   20    3
+...
 ```
 
 ### Notas
