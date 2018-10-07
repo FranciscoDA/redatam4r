@@ -1,1 +1,3 @@
 useDynLib("redatam4r", .registration = TRUE, .fixes = "R_")
+
+export(read.redatam)
