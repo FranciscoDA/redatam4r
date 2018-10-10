@@ -39,3 +39,18 @@ notapplicable.value.redatam.variable.chr <- function(x) attr(x, "notapplicable.v
 notapplicable.value.redatam.variable.bin <- function(x) attr(x, "notapplicable.value")
 notapplicable.value.redatam.variable.dbl <- function(x) attr(x, "notapplicable.value")
 notapplicable.value.redatam.variable.pck <- function(x) attr(x, "notapplicable.value")
+
+binpck_indexing <- function(x, i) {
+	if (is.logical(i)) {
+		i = which(i)
+	}
+	if (!is.numeric(i) || !is.integer(i)) {
+		stop('invalid indexing mode')
+	}
+	.Call('binpck_get', x, i)
+}
+
+'[.redatam.variable.pck' <- function(x, i) binpck_indexing(x, i)
+'[.redatam.variable.bin' <- function(x, i) binpck_indexing(x, i)
+length.redatam.variable.pck <- function(x) attr(x, 'instance.num')
+length.redatam.variable.bin <- function(x) attr(x, 'instance.num')

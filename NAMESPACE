@@ -33,3 +33,7 @@ S3method(notapplicable.value, redatam.variable.bin)
 S3method(notapplicable.value, redatam.variable.dbl)
 S3method(notapplicable.value, redatam.variable.pck)
 
+S3method('[', redatam.variable.bin)
+S3method('[', redatam.variable.pck)
+S3method(length, redatam.variable.bin)
+S3method(length, redatam.variable.pck)

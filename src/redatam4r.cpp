@@ -27,6 +27,21 @@ private:
 };
 
 extern "C" {
+SEXP binpck_get(SEXP binpck, SEXP indices) {
+	const int instance_len = INTEGER_ELT(getAttrib(binpck, mkString("instance.len")), 0);
+	//const int instance_num = INTEGER_ELT(getAttrib(binpck, mkString("instance.num")), 0);
+	int ans_len = length(indices);
+	RAIISEXP ans = allocVector(INTSXP, ans_len);
+	
+	const size_t instances_per_element = sizeof(uint32_t) * 8 / instance_len;
+	const size_t mask = (1 << instance_len) - 1;
+	for (int x = 0; x < ans_len; ++x) {
+		int instance_index = INTEGER_ELT(indices, x);
+		uint32_t element = INTEGER_ELT(binpck, instance_index / instances_per_element);
+		SET_INTEGER_ELT(ans, x, element & (mask << (instance_index % instances_per_element)));
+	}
+	return ans;
+}
 SEXP read_redatam(SEXP dic_path_in) {
 	UnixPath dic_path(CHAR(asChar(dic_path_in)));
 	std::fstream dic_file(dic_path.as_string(), std::ios_base::in|std::ios_base::binary);
@@ -54,6 +69,10 @@ SEXP read_redatam(SEXP dic_path_in) {
 	RAIISEXP variable_bin_class_rvector = mkString("redatam.variable.bin");
 	RAIISEXP variable_dbl_class_rvector = mkString("redatam.variable.dbl");
 	RAIISEXP variable_pck_class_rvector = mkString("redatam.variable.pck");
+
+	// special attributes for BIN and PCK
+	RAIISEXP binpck_instance_len = mkString("instance.len");
+	RAIISEXP binpck_instance_num = mkString("instance.num");
 
 	for (int entity_count = 1; entity_count < root_entity.num_entities; ++entity_count) {
 		auto entity = EntityDescriptor::fread(dic_file, false);
@@ -160,44 +179,42 @@ SEXP read_redatam(SEXP dic_path_in) {
 									classgets(column, variable_lng_class_rvector);
 									break;
 								case VariableDescriptor::Declaration::Type::BIN: {
-									size_t num_bytes = num_instances * var.declaration->size / 8;
-									if (num_instances * var.declaration->size % 8 != 0)
-										++num_bytes;
-									size_t num_words = num_bytes / sizeof(uint32_t);
-									if (num_bytes % sizeof(uint32_t) != 0)
+									const size_t num_bits = num_instances * var.declaration->size;
+									const size_t bits_per_word = sizeof(uint32_t) * 8;
+									size_t num_words = num_bits / bits_per_word;
+									if (num_bits % bits_per_word != 0)
 										++num_words;
-									size_t instances_per_word = sizeof(uint32_t) * 8 / var.declaration->size;
-									const uint32_t flag = (1 << var.declaration->size) - 1;
 
-									PROTECT(column = allocVector(INTSXP, num_instances));
+									PROTECT(column = allocVector(INTSXP, num_words));
 									for (int j = 0; j < num_words; ++j) {
 										uint32_t elt = fread_BIN(rbf_file);
-										if (rbf_file) {
-											for (int k = 0; k < instances_per_word; ++k) {
-												uint32_t elt_idx = j * instances_per_word + k;
-												SET_INTEGER_ELT(column, elt_idx, elt & flag);
-												elt >>= var.declaration->size;
-											}
-										}
-										else {
+										if (rbf_file)
+											SET_INTEGER_ELT(column, j, elt);
+										else
 											break;
-										}
 									}
+									setAttrib(column, binpck_instance_num, ScalarInteger(num_instances));
+									setAttrib(column, binpck_instance_len, ScalarInteger(var.declaration->size));
 									classgets(column, variable_bin_class_rvector);
 									break;
 								}
 								case VariableDescriptor::Declaration::Type::PCK: {
-									size_t len = num_instances / sizeof(uint32_t);
-									if (num_instances % sizeof(uint32_t) != 0)
-										++len;
-									PROTECT(column = allocVector(INTSXP, len));
-									/*for (int j = 0; j < len; ++j) {
+									const size_t num_bits = num_instances * var.declaration->size;
+									const size_t bits_per_word = sizeof(uint32_t) * 8;
+									size_t num_words = num_bits / bits_per_word;
+									if (num_bits % bits_per_word != 0)
+										++num_words;
+
+									PROTECT(column = allocVector(INTSXP, num_words));
+									for (int j = 0; j < num_words; ++j) {
 										uint32_t elt = fread_PCK(rbf_file);
 										if (rbf_file)
 											SET_INTEGER_ELT(column, j, elt);
 										else
 											break;
-									}*/
+									}
+									setAttrib(column, binpck_instance_num, ScalarInteger(num_instances));
+									setAttrib(column, binpck_instance_len, ScalarInteger(var.declaration->size));
 									classgets(column, variable_pck_class_rvector);
 									break;
 								}
@@ -223,13 +240,16 @@ SEXP read_redatam(SEXP dic_path_in) {
 						setAttrib(column, notapplicable_rsymbol, ScalarInteger(*var.descriptor.not_applicable));
 					}
 					/*if (var.labels.size() > 0) {
-						SEXP levels;
-						PROTECT(levels = allocVector(STRSXP, var.labels.size()+1));
+						int num_levels = var.labels.size();
+						if (var.descriptor.missing)
+							++num_levels;
+						if (var.descriptor.not_applicable)
+							++num_levels;
+						RAIISEXP levels = allocVector(STRSXP, num_levels);
 						SET_STRING_ELT(levels, 0, mkChar("[NA]"));
-						for (int i = 0; i < var.labels.size(); ++i)
+						for (int i = 0; i < num_levels; ++i)
 							SET_STRING_ELT(levels, i+1, mkChar(var.labels[i].c_str()));
 						setAttrib(column, R_LevelsSymbol, levels);
-						UNPROTECT(1);
 					}*/
 					std::stringstream ss;
 					ss << var;

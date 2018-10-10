@@ -113,6 +113,7 @@ std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d) {
 	for (const auto& l : d.labels)
 		stream << l.second << ", ";
 	return stream
+		<< "\nDescriptor: " << d.descriptor
 		<< "\nDescription: " << d.description
 		<< "\nUNK1: " << d.unknown1
 		<< "\nDocumentation: " << d.documentation
