@@ -1,7 +1,35 @@
 useDynLib("redatam4r", .registration = TRUE, .fixes = "R_")
 
-export(read.redatam, documentation, description)
+export(read.redatam, documentation, description, missing.value, notapplicable.value)
 
 S3method(description, redatam.entity)
-S3method(description, redatam.variable)
 S3method(documentation, redatam.entity)
+
+S3method(description, redatam.variable.int)
+S3method(description, redatam.variable.lng)
+S3method(description, redatam.variable.chr)
+S3method(description, redatam.variable.bin)
+S3method(description, redatam.variable.dbl)
+S3method(description, redatam.variable.pck)
+
+S3method(documentation, redatam.variable.int)
+S3method(documentation, redatam.variable.lng)
+S3method(documentation, redatam.variable.chr)
+S3method(documentation, redatam.variable.bin)
+S3method(documentation, redatam.variable.dbl)
+S3method(documentation, redatam.variable.pck)
+
+S3method(missing.value, redatam.variable.int)
+S3method(missing.value, redatam.variable.lng)
+S3method(missing.value, redatam.variable.chr)
+S3method(missing.value, redatam.variable.bin)
+S3method(missing.value, redatam.variable.dbl)
+S3method(missing.value, redatam.variable.pck)
+
+S3method(notapplicable.value, redatam.variable.int)
+S3method(notapplicable.value, redatam.variable.lng)
+S3method(notapplicable.value, redatam.variable.chr)
+S3method(notapplicable.value, redatam.variable.bin)
+S3method(notapplicable.value, redatam.variable.dbl)
+S3method(notapplicable.value, redatam.variable.pck)
+

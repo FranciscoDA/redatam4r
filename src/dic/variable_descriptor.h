@@ -18,14 +18,23 @@ public:
 		DOSPath rbf_path;
 		size_t size;
 	};
+	class Descriptor {
+	public:
+		std::string alias;
+		size_t decimals = 0;
+		std::string group;
+		std::optional<int> missing;
+		std::optional<int> not_applicable;
+	};
 	std::string name;
 	std::optional<Declaration> declaration;
 	std::string filter;
 	std::string range;
 	std::string datatype;
-	std::string labels;
+	std::vector<std::pair<int, std::string>> labels;
+	//std::string labels_str;
 	std::string description;
-	std::string descriptors;
+	Descriptor descriptor;
 
 	uint16_t unknown1;
 	std::string documentation;

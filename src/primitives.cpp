@@ -13,6 +13,17 @@ uint16_t fread_uint16_t(std::istream& stream) {
 uint32_t fread_uint32_t(std::istream& stream) {
 	return stream.get() + (stream.get() << 8) + (stream.get() << 16) + (stream.get() << 24);
 }
+
+void utf8_from_windows1252(std::string& dst, unsigned char c) {
+	if (c > 0x7f) {
+		dst += static_cast<char>(0b11000000 | ((c & 0b11000000) >> 6));
+		dst += static_cast<char>(0b10000000 | (c & 0b00111111));
+	}
+	else {
+		dst += static_cast<char>(c);
+	}
+}
+
 std::string fread_string(std::istream& stream) {
 	size_t sz = fread_uint16_t(stream);
 	std::string result;
@@ -20,36 +31,21 @@ std::string fread_string(std::istream& stream) {
 		return result;
 	if (sz == 0xFFFF)
 		sz = fread_uint32_t(stream);
-	char buf[sz];
-	stream.read(buf, sz);
 	result.reserve(sz);
-	// convert windows1252 to utf8
-	for (unsigned char c : buf) {
-		if (c > 0x7f) {
-			result += static_cast<char>(0b11000000 | ((c & 0b11000000) >> 6));
-			result += static_cast<char>(0b10000000 | (c & 0b00111111));
-		}
-		else
-			result += static_cast<char>(c);
-	}
+	for (size_t i = 0; i < sz; ++i)
+		utf8_from_windows1252(result, stream.get());
+
 	return result;
 }
-
-std::istream& fread_uint8_t(uint8_t& dst, std::istream& stream) {
-	dst = fread_uint8_t(stream);
-	return stream;
-}
-std::istream& fread_uint16_t(uint16_t& dst, std::istream& stream) {
-	dst = fread_uint16_t(stream);
-	return stream;
-}
-std::istream& fread_uint32_t(uint32_t& dst, std::istream& stream) {
-	dst = fread_uint32_t(stream);
-	return stream;
-}
-std::istream& fread_string(std::string& dst, std::istream& stream) {
-	dst.assign(fread_string(stream));
-	return stream;
+std::string fread_fixed_string(std::istream& stream, size_t width) {
+	std::string result;
+	while (width > 0) {
+		if (int c = stream.get()) {
+			utf8_from_windows1252(result, c);
+		}
+		--width;
+	}
+	return result;
 }
 
 size_t fread_decimal(std::istream& stream, size_t digits) {
@@ -63,5 +59,15 @@ double fread_double(std::istream& stream) {
 	double d;
 	stream.read((char*)&d, sizeof(double));
 	return d;
+}
+
+uint32_t fread_PCK(std::istream& stream) {
+	uint32_t x = stream.get() + (stream.get() << 8) + (stream.get() << 16) + (stream.get() << 24);
+	return x;
+}
+
+uint32_t fread_BIN(std::istream& stream) {
+	uint32_t x = (stream.get() << 24) + (stream.get() << 16) + (stream.get() << 8) + stream.get();
+	return x;
 }
 

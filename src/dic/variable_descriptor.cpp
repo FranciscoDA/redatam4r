@@ -7,7 +7,7 @@
 #include "variable_descriptor.h"
 
 std::optional<VariableDescriptor::Declaration> VariableDescriptor::Declaration::fromDeclarationString(const std::string& declstr) {
-	std::regex r ("DATASET (BIN|CHR|DBL|INT|LNG|PCK) '([^']+)' SIZE ([0-9]+)", std::regex::extended);
+	static const std::regex r("DATASET (BIN|CHR|DBL|INT|LNG|PCK) '([^']+)' SIZE ([0-9]+)", std::regex::extended);
 	if (std::smatch match; std::regex_match(declstr, match, r)) {
 		Declaration::Type t = Declaration::Type::CHR;
 		if (match[1] == "BIN") t = Declaration::Type::BIN;
@@ -31,13 +31,32 @@ VariableDescriptor VariableDescriptor::fread(std::istream& stream) {
 	d.filter   = fread_string(stream);
 	d.range    = fread_string(stream);
 	d.datatype = fread_string(stream);
-	d.labels   = fread_string(stream);
+
+	std::string labels_str = fread_string(stream);
+	static const std::regex labels_regex("([0-9]+) ([^\t]+)\t", std::regex::extended);
+	std::smatch match;
+	while (std::regex_search(labels_str, match, labels_regex)) {
+		d.labels.emplace_back(std::stoi(match[1]), match[2]);
+		labels_str = match.suffix();
+	}
+
 	d.description   = fread_string(stream);
-	d.descriptors   = fread_string(stream);
+
+	std::string descriptor_str = fread_string(stream);
+	static const std::regex missing_regex("MISSING ([0-9]+)");
+	static const std::regex notapplicable_regex("NOTAPPLICABLE ([0-9]+)");
+	if (std::regex_search(descriptor_str, match, missing_regex)) {
+		d.descriptor.missing = std::stoi(match[1]);
+	}
+	if (std::regex_search(descriptor_str, match, notapplicable_regex)) {
+		d.descriptor.not_applicable = std::stoi(match[1]);
+	}
+
 	d.unknown1 = fread_uint16_t(stream);
 	d.documentation = fread_string(stream);
 	d.id = fread_uint16_t(stream);
-	for (auto& c : d.unknown) c = stream.get();
+	for (auto& c : d.unknown)
+		c = stream.get();
 	return d;
 }
 
@@ -68,19 +87,33 @@ std::ostream& operator<<(std::ostream& stream, const VariableDescriptor::Declara
 	return stream << " (" << d.size << ")";
 }
 
+std::ostream& operator<<(std::ostream& stream, const VariableDescriptor::Descriptor& d) {
+	return stream
+		<< "ALIAS " << d.alias
+		<< " DECIMALS " << d.decimals
+		<< " GROUP " << d.group;
+	if (d.missing)
+		stream << " MISSING " << (*d.missing);
+	if (d.not_applicable)
+		stream << " NOTAPPLICABLE " << (*d.not_applicable);
+	return stream;
+}
+
 std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d) {
 	stream << "Name: " << d.name << "\nDeclaration: ";
 	if (d.declaration)
 		stream << *d.declaration;
 	else
 		stream << "NULL";
-	return stream
+	stream
 		<< "\nFilter: " << d.filter
 		<< "\nRange: " << d.range
 		<< "\nDatatype: " << d.datatype
-		<< "\nLabels: " << d.labels
+		<< "\nLabels: ";
+	for (const auto& l : d.labels)
+		stream << l.second << ", ";
+	return stream
 		<< "\nDescription: " << d.description
-		<< "\nDescriptors: " << d.descriptors
 		<< "\nUNK1: " << d.unknown1
 		<< "\nDocumentation: " << d.documentation
 		<< "\nID: " << d.id
