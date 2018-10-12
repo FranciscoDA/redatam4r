@@ -20,24 +20,28 @@ al archivo diccionario de la base de datos.
 de este objeto serán las entidades de la base de datos. Los nombres de los elementos
 serán sus identificadores dentro de la base de datos.
 
-Las entidades de la base de datos se representan como objetos de clase `redatam.entity`
-y además heredan a `data.frame`. Los objetos `redatam.entity` contienen atributos
-especiales con metadatos de las entidades. Las columnas del dataframe serán
-las variables de la entidad, y cada fila será una instancia de esa entidad. La
-primer columna es especial en el sentido de que se corresponde con el número de
-fila de la entidad de nivel superior.
+Las _entidades_ de la base de datos se representan como objetos de clase `redatam.entity`
+y además heredan a `data.frame`. Las columnas del dataframe serán
+las _variables_ de la entidad, y cada fila será un _elemento_ de dicha entidad. La
+primer columna del dataframe es especial, puesto que indica el número de
+fila del elemento padre de la entidad de nivel superior.
 
-Todas las variables son una columna dentro del dataframe de la entidad que las
-contiene. La clase del vector de una variable es `redatam.variable`.
+Todas las variables se almacenan como una columna dentro del dataframe de la entidad a la que pertenecen.
+La clase del vector de una variable es `redatam.variable`. Las
+observaciones de las variables pueden representar un gran volumen de
+datos, por lo que trabajar con todas las variables en memoria
+se volvería una tarea demandante. Es por esto que la carga de las observaciones
+se realiza sólo mediante el operador de extracción (`[`), en caso contrario
+los vectores permanecen vacíos.
 
-Algunos metadatos de los objetos de entidades y variables pueden ser consultados
-mediante los métodos `description` y `documentation`.
+Algunos metadatos de los objetos `redatam.database`, `redatam.entity` y `redatam.variable` pueden ser consultados
+mediante el método `description`.
 
 Ejemplo de uso:
 ```
 > library(redatam4r)
 > a <- read.redatam('/path/al/diccionario.dic')
-> a$DPTO
+> head(a$DPTO)
 
  PROV_id var1 var2 var3
 1      1    1    1    1
@@ -46,13 +50,17 @@ Ejemplo de uso:
 ...
 
 > description(a$DPTO)
-[1] "Departamento / Partido"
-
 > description(a$HOGAR$H23)
-[1] "Antiguedad de la vivienda"
 ```
 
 ### Notas
+
+Por conveniencia y compatibilidad con sistemas Unix, los paths a archivos de índices (PTR) y
+de base de datos (RBF) se reescriben tomando el nombre base indicado dentro del diccionario
+y el directorio en que se encuentra el diccionario. Por ejemplo, si el diccionario
+indica que un archivo se encuentra en el directorio `C:\\Redatam\\datos.rbf`, pero
+el diccionario se cargó desde el path `/home/user/dic.dic`, entonces el archivo se buscará con el
+path `/home/user/datos.rbf`.
 
 En este repositorio no se distribuyen ni se divulgarán las bases de datos REDATAM de
 ningún organismo estadístico.
