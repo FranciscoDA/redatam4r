@@ -37,7 +37,7 @@ los vectores permanecen vacíos.
 Algunos metadatos de los objetos `redatam.database`, `redatam.entity` y `redatam.variable` pueden ser consultados
 mediante el método `description`.
 
-Ejemplo de uso:
+### Ejemplo:
 ```
 > library(redatam4r)
 > a <- read.redatam('/path/al/diccionario.dic')
@@ -51,7 +51,29 @@ Ejemplo de uso:
 
 > description(a$DPTO)
 > description(a$HOGAR$H23)
+
+> h2417 = a$HOGAR$H2417[1:length(a$HOGAR$H2417)]
+# la variable h2417 indica si el hogar es alquilado o propiedad del encuestado
+> h_alq = h2417=="Alquilada"
+> h_pro = h2417=="Propia"
+
+> p_alq = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_alq]]]
+> p_pro = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_pro]]]
+
+> df = data.frame(
+	inquilinos=tabulate(p_alq),
+	propietarios=tabulate(p_pro),
+	provincia=head(a$PROV$NOMPROV, 24)
+)
 ```
+
+Distribución de hogares con propietario por provincia:
+`> barplot(df$propietarios, names.arg=df$provincia, las=2)`
+![grafico propietarios](https://i.imgur.com/oEXEdiR.png)
+
+Distribución de hogares con inquilinos por provincia:
+`> barplot(df$inquilinos, names.arg=df$provincia, las=2)`
+![grafico inquilinos](https://i.imgur.com/nkm9IP4.png)
 
 ### Notas
 
