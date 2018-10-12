@@ -40,9 +40,8 @@ std::string fread_string(std::istream& stream) {
 std::string fread_fixed_string(std::istream& stream, size_t width) {
 	std::string result;
 	while (width > 0) {
-		if (int c = stream.get()) {
-			utf8_from_windows1252(result, c);
-		}
+		int c = stream.get();
+		utf8_from_windows1252(result, c);
 		--width;
 	}
 	return result;

@@ -3,6 +3,7 @@ read.redatam <- function(dic_path) .Call("read_redatam", dic_path)
 
 description <- function(x, ...) UseMethod("description")
 
+description.redatam.database <- function(x) cat(attr(x, "description"))
 description.redatam.entity <- function(x) cat(attr(x, "description"))
 description.redatam.variable.int <- function(x) cat(attr(x, "description"))
 description.redatam.variable.lng <- function(x) cat(attr(x, "description"))

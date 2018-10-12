@@ -2,6 +2,7 @@ useDynLib("redatam4r", .registration = TRUE, .fixes = "R_")
 
 export(read.redatam, description)
 
+S3method(description, redatam.database)
 S3method(description, redatam.entity)
 S3method(description, redatam.variable.int)
 S3method(description, redatam.variable.lng)
@@ -9,7 +10,6 @@ S3method(description, redatam.variable.chr)
 S3method(description, redatam.variable.bin)
 S3method(description, redatam.variable.dbl)
 S3method(description, redatam.variable.pck)
-
 
 S3method('[', redatam.variable.bin)
 S3method('[', redatam.variable.pck)
@@ -24,8 +24,3 @@ S3method(length, redatam.variable.int)
 S3method(length, redatam.variable.lng)
 S3method(length, redatam.variable.real)
 
-#S3method(print, redatam.variable.bin)
-#S3method(print, redatam.variable.pck)
-
-#S3method(format, redatam.variable.bin)
-#S3method(format, redatam.variable.pck)

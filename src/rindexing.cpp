@@ -128,6 +128,13 @@ SEXP chr_get_rvector(SEXP chr, SEXP indices) {
 		int src_index = INTEGER_ELT(indices, dst_index)-1;
 		f.seekg(src_index * instance_len);
 		std::string s = fread_fixed_string(f, instance_len);
+		auto it = s.end();
+		--it;
+		while(it != s.begin() and std::isspace(*it)) {
+			--it;
+		}
+		++it;
+		s.assign(s.begin(), it);
 		SET_STRING_ELT(ans, dst_index, mkChar(s.c_str()));
 	}
 	return ans;
