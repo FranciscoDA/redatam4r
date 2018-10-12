@@ -88,19 +88,22 @@ std::ostream& operator<<(std::ostream& stream, const VariableDescriptor::Declara
 }
 
 std::ostream& operator<<(std::ostream& stream, const VariableDescriptor::Descriptor& d) {
-	return stream
-		<< "ALIAS " << d.alias
-		<< " DECIMALS " << d.decimals
-		<< " GROUP " << d.group;
+	if (!d.alias.empty())
+		stream << "ALIAS " << d.alias << " ";
+	stream << "DECIMALS " << d.decimals << " ";
+	if (!d.group.empty())
+		stream << "GROUP " << d.group << " ";
 	if (d.missing)
-		stream << " MISSING " << (*d.missing);
+		stream << " MISSING " << (*d.missing) << " ";
 	if (d.not_applicable)
 		stream << " NOTAPPLICABLE " << (*d.not_applicable);
 	return stream;
 }
 
 std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d) {
-	stream << "Name: " << d.name << "\nDeclaration: ";
+	stream
+		<< "Name: " << d.name
+		<< "\nDeclaration: ";
 	if (d.declaration)
 		stream << *d.declaration;
 	else

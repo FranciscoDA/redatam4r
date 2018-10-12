@@ -6,7 +6,6 @@
 
 extern "C" {
 	SEXP read_redatam(SEXP dic_path);
-	SEXP binpck_get(SEXP binpck, SEXP indices);
 }
 
 #endif
