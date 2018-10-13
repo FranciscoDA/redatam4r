@@ -16,6 +16,8 @@ std::ostream& operator<<(std::ostream& stream, const std::array<T, N>& arr) {
 	return stream << std::setbase(10) << std::setfill('0');
 }
 
+void rtrim(std::string& s);
+
 class Path {
 public:
 	Path() = delete;

@@ -19,6 +19,16 @@ variable_indexing <- function(x, i, funcname) {
 	if (!is.numeric(i) && !is.integer(i)) {
 		stop('invalid indexing mode')
 	}
+	i = as.integer(i)
+	negindx = all(i <= 0)
+	posindx = any(i >= 0)
+	if (negindx && posindx) {
+		stop('only 0\'s may be mixed with negative subscripts')
+	}
+	if (negindx) {
+		i = (1:length(x))[i]
+	}
+	i = i[i != 0]
 	.Call(funcname, x, i)
 }
 

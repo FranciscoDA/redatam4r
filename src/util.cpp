@@ -24,6 +24,16 @@ std::string locate_icase(const std::string& dir, const std::string& base) {
 	return result;
 }
 
+void rtrim(std::string& s) {
+	auto it = s.end();
+	--it;
+	while(it != s.begin() and std::isspace(*it)) {
+		--it;
+	}
+	++it;
+	s.assign(s.begin(), it);
+}
+
 std::ostream& operator<<(std::ostream& stream, const Path& p) {
 	return stream << p.raw_path;
 }

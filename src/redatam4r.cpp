@@ -25,6 +25,9 @@ SEXP read_redatam(SEXP dic_path_in) {
 	UnixPath dic_path(CHAR(asChar(dic_path_in)));
 	std::fstream dic_file(dic_path.as_string(), std::ios_base::in|std::ios_base::binary);
 
+	if (!dic_file)
+		error_return("could not open dictionary file for reading");
+
 	auto dic = DictionaryDescriptor::fread(dic_file);
 	auto root_entity = EntityDescriptor::fread(dic_file, true);
 
@@ -103,7 +106,6 @@ SEXP read_redatam(SEXP dic_path_in) {
 						auto rbf_real_basename = locate_icase(dic_path.dir().as_string(), var.declaration->rbf_path.basename());
 						if (!rbf_real_basename.empty()) {
 							auto rbf_real_path = dic_path.dir() + rbf_real_basename;
-							//std::fstream rbf_file(rbf_real_path.as_string(), std::ios_base::in|std::ios_base::binary);
 							setAttrib(column, instance_len_rsymbol, ScalarInteger(var.declaration->size));
 							setAttrib(column, instance_num_rsymbol, ScalarInteger(num_instances));
 							setAttrib(column, data_path_rsymbol, mkString(rbf_real_path.as_string().c_str()));
