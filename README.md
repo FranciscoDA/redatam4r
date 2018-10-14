@@ -53,27 +53,39 @@ mediante el método `description`.
 > description(a$HOGAR$H23)
 
 > h2417 = a$HOGAR$H2417[1:length(a$HOGAR$H2417)]
+
 # la variable h2417 indica si el hogar es alquilado o propiedad del encuestado
+# filtrar los elementos que deseamos (hogares alquilados y propios)
 > h_alq = h2417=="Alquilada"
 > h_pro = h2417=="Propia"
 
+# obtener los id de provincia a partir de los id de vivienda
 > p_alq = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_alq]]]
 > p_pro = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_pro]]]
 
+# tabular los datos (contar apariciones de cada provincia)
+> p_alq = tabulate(p_alq)
+> p_pro = tabulate(p_pro)
+
+# consolidar los datos en un dataframe
 > df = data.frame(
-	inquilinos=tabulate(p_alq),
-	propietarios=tabulate(p_pro),
+	inquilinos=p_alq,
+	propietarios=p_pro,
+	inqxprop=p_alq/p_pro,
 	provincia=head(a$PROV$NOMPROV, 24)
 )
+
+# graficar barras
+midpoints = barplot(df$inqxprop)
+
+# graficar nombres de provincia
+text(midpoints, 0, adj=c(0,NA), labels=df$provincia, srt=90)
+
+# titulo y nombres de ejes
+title('Cantidad de inquilinos por propietario', xlab='Provincias', ylab='Relación')
 ```
 
-Distribución de hogares con propietario por provincia:
-`> barplot(df$propietarios, names.arg=df$provincia, las=2)`
-![grafico propietarios](https://i.imgur.com/oEXEdiR.png)
-
-Distribución de hogares con inquilinos por provincia:
-`> barplot(df$inquilinos, names.arg=df$provincia, las=2)`
-![grafico inquilinos](https://i.imgur.com/nkm9IP4.png)
+![grafico\_inq\_x\_prop](https://i.imgur.com/wwKDHso.png)
 
 ### Notas
 
