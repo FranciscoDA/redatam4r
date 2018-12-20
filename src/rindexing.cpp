@@ -3,46 +3,33 @@
 #include "util.h"
 #include "rindexing.h"
 #include "protected_sexp.h"
+#include <algorithm>
 #include <R.h>
 #include <Rdefines.h>
 
-// translate the integer values from dst into
-// the indices of their corresponding matches in levelkeys
-// this is done because redatam will usually
-// store factors as sparse 0-based integers
+// translate integer values from `dst` into
+// the indices of their corresponding matches in `levelkeys`
+// this is necessary because REDATAM can
+// store factors as sparse, 0-based integers
 // while R requires factors to be contiguous and 1-based
 void translate_factor(SEXP dst, SEXP levelkeys) {
+	const int* const first = INTEGER(levelkeys);
+	const int* const last = first + length(levelkeys);
 	for (int i = 0; i < length(dst); ++i) {
 		int v = INTEGER_ELT(dst, i);
-
-		int left = 0;
-		int right = length(levelkeys)-1;
-		while (left < right) {
-			int mid = (left+right) >> 1;
-			if (v < INTEGER_ELT(levelkeys, mid)) {
-				right = mid - 1;
-			}
-			else if (INTEGER_ELT(levelkeys, mid) < v) {
-				left = mid + 1;
-			}
-			else {
-				left = mid;
-				break;
-			}
-		}
-		if (INTEGER_ELT(levelkeys, left) == v)
-			SET_INTEGER_ELT(dst, i, left+1);
-		else
-			SET_INTEGER_ELT(dst, i, NA_INTEGER);
+		const int* const pos = std::lower_bound(first, last, v);
+		SET_INTEGER_ELT(dst, i, pos != last && *pos==v ? pos-first+1 : NA_INTEGER);
 	}
 }
 
-// translates the factors and adds the appropiate
-// object attributes
+// if `src` has `levels` and `levelkeys` attributes, then
+// translate the values in `dst` to the factors in `src`
+// using `translate_factor` and set the `levels` and `class`
+// attributes of `dst` to turn it into a proper factor object
 void configure_factor(SEXP dst, SEXP src) {
 	SEXP levels = getAttrib(src, R_LevelsSymbol);
-	if (!isNull(levels)) {
-		SEXP levelkeys = getAttrib(src, mkString("levelkeys"));
+	SEXP levelkeys = getAttrib(src, mkString("levelkeys"));
+	if (!isNull(levels) and !isNull(levelkeys)) {
 		translate_factor(dst, levelkeys);
 		setAttrib(dst, R_LevelsSymbol, levels);
 		classgets(dst, mkString("factor"));
