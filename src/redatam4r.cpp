@@ -152,7 +152,7 @@ SEXP read_redatam(SEXP dic_path_in) {
 						std::sort(levels.begin(), levels.end());
 						ProtectedSEXP levels_rvector = allocVector(STRSXP, levels.size());
 						ProtectedSEXP levelkeys_rvector = allocVector(INTSXP, levels.size());
-						for (int i = 0; i < levels.size(); ++i) {
+						for (int i = 0; i < static_cast<int>(levels.size()); ++i) {
 							SET_STRING_ELT(levels_rvector, i, mkChar(levels[i].second.c_str()));
 							SET_INTEGER_ELT(levelkeys_rvector, i, levels[i].first);
 						}
