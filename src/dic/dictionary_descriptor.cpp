@@ -3,6 +3,8 @@
 #include "../primitives.h"
 #include "dictionary_descriptor.h"
 
+namespace Redatam {
+
 DictionaryDescriptor DictionaryDescriptor::fread(std::istream& stream) {
 	DictionaryDescriptor d;
 	d.unknown1 = fread_uint32_t(stream); // always 02 05 00 00?
@@ -27,3 +29,4 @@ std::ostream& operator<<(std::ostream& stream, const DictionaryDescriptor& d) {
 		<< std::endl;
 }
 
+} // namespace Redatam

@@ -6,6 +6,8 @@
 #include "../util.h"
 #include "variable_descriptor.h"
 
+namespace Redatam {
+
 std::optional<VariableDescriptor::Declaration> VariableDescriptor::Declaration::fromDeclarationString(const std::string& declstr) {
 	static const std::regex r("DATASET (BIN|CHR|DBL|INT|LNG|PCK) '([^']+)' SIZE ([0-9]+)", std::regex::extended);
 	if (std::smatch match; std::regex_match(declstr, match, r)) {
@@ -17,6 +19,7 @@ std::optional<VariableDescriptor::Declaration> VariableDescriptor::Declaration::
 		else if (match[1] == "LNG") t = Declaration::Type::LNG;
 		else if (match[1] == "PCK") t = Declaration::Type::PCK;
 		std::string p = match[2];
+		std::replace(begin(p), end(p), '\\', fs::path::preferred_separator);
 		size_t s = std::stoi(match[3]);
 		return Declaration{t, p, s};
 	}
@@ -124,3 +127,4 @@ std::ostream& operator<<(std::ostream& stream, const VariableDescriptor& d) {
 		<< "\nUNK: " << d.unknown;
 }
 
+} // namespace Redatam

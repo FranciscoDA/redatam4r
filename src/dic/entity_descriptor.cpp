@@ -5,16 +5,19 @@
 #include "../util.h"
 #include "entity_descriptor.h"
 
+namespace Redatam {
+
 EntityDescriptor EntityDescriptor::fread(std::istream& stream, bool is_root) {
 	EntityDescriptor d;
 	for (; d.name1.empty(); d.name1 = fread_string(stream)) {}
 
 	if (!is_root)
 		d.name2 = fread_string(stream);
-	d.parent       = fread_string(stream);
-	d.description  = fread_string(stream);
-	d.ptr_path = DOSPath(fread_string(stream));
-	d.unknown1     = fread_uint16_t(stream);
+
+	d.parent        = fread_string(stream);
+	d.description   = fread_string(stream);
+	d.ptr_path      = fread_path(stream);
+	d.unknown1      = fread_uint16_t(stream);
 	d.id_varname    = fread_string(stream);
 	d.name_varname  = fread_string(stream);
 	d.documentation = fread_string(stream);
@@ -28,6 +31,7 @@ EntityDescriptor EntityDescriptor::fread(std::istream& stream, bool is_root) {
 	d.label              = fread_string(stream);
 	d.is_sensible        = fread_uint16_t(stream);
 	d.sensible_threshold = fread_uint16_t(stream);
+
 	return d;
 }
 
@@ -49,3 +53,4 @@ std::ostream& operator<<(std::ostream& stream, const EntityDescriptor& d) {
 		<< "\nUNK6: " << d.unknown6;
 }
 
+} // namespace Redatam

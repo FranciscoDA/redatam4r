@@ -1,8 +1,9 @@
-#ifndef _REDATAM4R_DICTIONARY_DESCRIPTOR_H_
-#define _REDATAM4R_DICTIONARY_DESCRIPTOR_H_
+#pragma once
 
 #include <string>
 #include <array>
+
+namespace Redatam {
 
 class DictionaryDescriptor {
 public:
@@ -17,5 +18,4 @@ public:
 };
 std::ostream& operator<<(std::ostream& stream, const DictionaryDescriptor& d);
 
-#endif
-
+}

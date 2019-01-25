@@ -6,12 +6,14 @@
 
 class ProtectedSEXP {
 public:
-	ProtectedSEXP() = delete;
 	ProtectedSEXP(SEXP v);
+	ProtectedSEXP();
 	~ProtectedSEXP();
 	operator SEXP();
+	ProtectedSEXP& operator=(SEXP v);
+	ProtectedSEXP operator=(const ProtectedSEXP&) = delete;
 protected:
-	SEXP sexp;
+	SEXP sexp = nullptr;
 };
 
 #endif

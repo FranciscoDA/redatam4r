@@ -14,12 +14,9 @@ description.redatam.variable.pck <- function(x) cat(attr(x, "description"))
 
 variable_indexing <- function(x, i, funcname) {
 	if (is.logical(i)) {
-		i = which(i)
+		i <- which(i);
 	}
-	if (!is.numeric(i) && !is.integer(i)) {
-		stop('invalid indexing mode')
-	}
-	i = as.integer(i)
+	i <- as.integer(i);
 	negindx = all(i <= 0)
 	posindx = any(i >= 0)
 	if (negindx && posindx) {
@@ -29,7 +26,7 @@ variable_indexing <- function(x, i, funcname) {
 		i = (1:length(x))[i]
 	}
 	i = i[i != 0]
-	.Call(funcname, x, i)
+	.Call(funcname, x, as.integer(i-1))
 }
 
 '[.redatam.variable.bin'  <- function(x, i) variable_indexing(x, i, 'bin_get_rvector')

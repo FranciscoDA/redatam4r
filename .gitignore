@@ -1,4 +1,6 @@
-redatam4r
 *.o
 *.so
 symbols.rds
+include
+lib
+obj

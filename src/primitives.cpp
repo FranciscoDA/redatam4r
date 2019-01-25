@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
 
 #include "primitives.h"
+
+namespace Redatam {
 
 uint8_t fread_uint8_t(std::istream& stream) {
 	return stream.get();
@@ -11,7 +14,7 @@ uint16_t fread_uint16_t(std::istream& stream) {
 	return stream.get() + (stream.get() << 8);
 }
 uint32_t fread_uint32_t(std::istream& stream) {
-	return stream.get() + (stream.get() << 8) + (stream.get() << 16) + (stream.get() << 24);
+	return fread_uint16_t(stream) + (fread_uint16_t(stream) << 16);
 }
 
 void utf8_from_windows1252(std::string& dst, unsigned char c) {
@@ -37,6 +40,11 @@ std::string fread_string(std::istream& stream) {
 
 	return result;
 }
+fs::path fread_path(std::istream& stream) {
+	std::string raw = fread_string(stream);
+	std::replace(begin(raw), end(raw), '\\', fs::path::preferred_separator);
+	return raw;
+}
 std::string fread_fixed_string(std::istream& stream, size_t width) {
 	std::string result;
 	while (width > 0) {
@@ -44,6 +52,10 @@ std::string fread_fixed_string(std::istream& stream, size_t width) {
 		utf8_from_windows1252(result, c);
 		--width;
 	}
+	int i = result.size()-1;
+	while (i >= 0 && std::isspace(result[i]))
+		--i;
+	result.resize(i+1);
 	return result;
 }
 
@@ -61,12 +73,11 @@ double fread_double(std::istream& stream) {
 }
 
 uint32_t fread_PCK(std::istream& stream) {
-	uint32_t x = stream.get() + (stream.get() << 8) + (stream.get() << 16) + (stream.get() << 24);
-	return x;
+	return fread_uint32_t(stream);
 }
 
 uint32_t fread_BIN(std::istream& stream) {
-	uint32_t x = (stream.get() << 24) + (stream.get() << 16) + (stream.get() << 8) + stream.get();
-	return x;
+	return (stream.get() << 24) + (stream.get() << 16) + (stream.get() << 8) + stream.get();
 }
 
+} // namespace Redatam

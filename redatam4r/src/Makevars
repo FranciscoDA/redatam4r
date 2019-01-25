@@ -1,0 +1,12 @@
+CXX_STD = CXX17
+PKG_CXXFLAGS = -Wall
+PKG_CPPFLAGS = -I../../include
+PKG_LIBS = -lstdc++fs -L../../lib/static -lredatam
+
+SOURCES = redatam4r.cpp \
+          init.cpp \
+          protected_sexp.cpp \
+          rindexing.cpp
+
+OBJECTS = $(SOURCES:.cpp=.o)
+
