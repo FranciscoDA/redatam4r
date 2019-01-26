@@ -1,4 +1,5 @@
 Package: redatam4r
+Encoding: UTF-8
 Version: 0.1
 Title: Functions for working with REDATAM censal databases
 Authors@R: c(
@@ -10,4 +11,4 @@ LazyLoad: yes
 NeedsCompilation: yes
 Author: Francisco Altoe [aut, cre]
 Maintainer: Francisco Altoe <franciscoda@outlook.com>
-
+RoxygenNote: 6.1.1
