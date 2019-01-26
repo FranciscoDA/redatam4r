@@ -2,13 +2,24 @@
 
 A través de este proyecto se pretende:
  * Completar la especificación del formato binario REDATAM utilizado por el software privativo homónimo de la CEPAL
- * Desarrollar un paquete para el lenguaje R que permita la carga de bases de datos censales para su análisis estadístico
+ * Desarrollar una libreria (libredatam) que facilite la carga de bases de datos censales Redatam
+ * Desarrollar un paquete (redatam4r) para el lenguaje R basado en libredatam
+ 
 
-### Compilación
+### Compilación e Instalación
 
-Para compilar el paquete se debe ejecutar el siguiente comando desde el directorio superior:
 ```sh
+# compilar libredatam:
+$ make
+# compilar e instalar redatam4r
 $ R CMD INSTALL redatam4r
+```
+Es necesario que el compilador y R soporten C++17 (para compilar libredatam y redatam4r, respectivamente)
+
+La documentación y el archivo `NAMESPACE` se encuentran incluidos en este repositorio. Si se modifican los archivos en `redatam4r/R` puede que sea necesario regenerarlos con roxygen2. Para esto basta con ejecutar la linea de comandos de R en la raíz del proyecto con los siguientes comandos:
+```r
+> library(devtools)
+> devtools::document('redatam4r')
 ```
 
 ### Uso
@@ -38,7 +49,7 @@ Algunos metadatos de los objetos `redatam.database`, `redatam.entity` y `redatam
 mediante el método `description`.
 
 ### Ejemplo:
-```
+```r
 > library(redatam4r)
 > a <- read.redatam('/path/al/diccionario.dic')
 > head(a$DPTO)
