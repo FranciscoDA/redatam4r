@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "../primitives.h"
-#include "../util.h"
-#include "entity_descriptor.h"
+#include "redatam/primitives.h"
+#include "redatam/util.h"
+#include "redatam/dic/entity_descriptor.h"
 
 namespace Redatam {
 

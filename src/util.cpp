@@ -1,6 +1,6 @@
 #include <string>
 #include <algorithm>
-#include "util.h"
+#include "redatam/util.h"
 
 namespace Redatam {
 

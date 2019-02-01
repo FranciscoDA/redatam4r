@@ -1,20 +1,17 @@
 CXXFLAGS=-O2 -fPIC -std=c++17 -Wall
-LDFLAGS=-lstdc++fs
+CPPFLAGS=-Iinclude
+LDLIBS=-lstdc++fs
 
-SRC_HEADERS=src/dic/entity_descriptor.h \
-            src/dic/variable_descriptor.h \
-            src/dic/dictionary_descriptor.h \
-            src/util.h \
-            src/read_dic.h \
-            src/read_ptr.h \
-			src/read_rbf.h \
-            src/fs.h \
-            src/redatam_exception.h \
-            src/primitives.h
-
-INCLUDE_HEADERS=$(SRC_HEADERS:src/%.h=include/redatam/%.h)
-
-INCLUDE_DIRS=$(sort $(dir $(INCLUDE_HEADERS)))
+INCLUDE_HEADERS=include/redatam/dic/entity_descriptor.h \
+            include/redatam/dic/variable_descriptor.h \
+            include/redatam/dic/dictionary_descriptor.h \
+            include/redatam/util.h \
+            include/redatam/read_dic.h \
+            include/redatam/read_ptr.h \
+			include/redatam/read_rbf.h \
+            include/redatam/fs.h \
+            include/redatam/redatam_exception.h \
+            include/redatam/primitives.h
 
 SRC_SOURCES=src/dic/dictionary_descriptor.cpp \
             src/dic/entity_descriptor.cpp \
@@ -25,24 +22,17 @@ SRC_SOURCES=src/dic/dictionary_descriptor.cpp \
 
 OBJ_OBJECTS=$(SRC_SOURCES:src/%.cpp=obj/%.o)
 
-OBJ_DIRS=$(sort $(dir $(OBJ_OBJECTS)))
-
 obj/%.o: src/%.cpp $(SRC_HEADERS)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-include/redatam/%.h: src/%.h
-	@mkdir -p $(dir $@)
-	cp $< $@
+all: lib/shared/libredatam.so lib/static/libredatam.a
 
-all: lib/shared/libredatam.so lib/static/libredatam.a $(INCLUDE_HEADERS)
-
-
-lib/shared/libredatam.so: $(OBJ_OBJECTS)
+lib/shared/libredatam.so: $(OBJ_OBJECTS) $(INCLUDE_HEADERS)
 	@mkdir -p $(dir $@)
 	g++ -shared $(CPPFLAGS) $(CXXFLAGS) -o $@ $(OBJ_OBJECTS)
 
-lib/static/libredatam.a: $(OBJ_OBJECTS)
+lib/static/libredatam.a: $(OBJ_OBJECTS) $(INCLUDE_HEADERS)
 	@mkdir -p $(dir $@)
 	ar rcs $@ $(OBJ_OBJECTS)
 
@@ -50,4 +40,3 @@ lib/static/libredatam.a: $(OBJ_OBJECTS)
 clean:
 	rm -fr obj
 	rm -fr lib
-	rm -fr include

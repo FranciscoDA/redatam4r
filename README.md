@@ -50,36 +50,38 @@ mediante el método `description`.
 
 ### Ejemplo:
 ```r
-> library(redatam4r)
-> a <- read.redatam('/path/al/diccionario.dic')
-> head(a$DPTO)
-
+library(redatam4r)
+a <- read.redatam('/path/al/diccionario.dic')
+head(a$DPTO)
+```
+```
  PROV_id var1 var2 var3
 1      1    1    1    1
 2      1    2    4    9
 3      1    1   20    3
 ...
+```
+```r
+description(a$DPTO)
+description(a$HOGAR$H23)
 
-> description(a$DPTO)
-> description(a$HOGAR$H23)
-
-> h2417 = a$HOGAR$H2417[1:length(a$HOGAR$H2417)]
+h2417 = a$HOGAR$H2417[1:length(a$HOGAR$H2417)]
 
 # la variable h2417 indica si el hogar es alquilado o propiedad del encuestado
 # filtrar los elementos que deseamos (hogares alquilados y propios)
-> h_alq = h2417=="Alquilada"
-> h_pro = h2417=="Propia"
+h_alq = h2417=="Alquilada"
+h_pro = h2417=="Propia"
 
 # obtener los id de provincia a partir de los id de vivienda
-> p_alq = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_alq]]]
-> p_pro = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_pro]]]
+p_alq = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_alq]]]
+p_pro = a$DPTO$PROV_id[a$VIVIENDA$DPTO_id[a$HOGAR$VIVIENDA_id[h_pro]]]
 
 # tabular los datos (contar apariciones de cada provincia)
-> p_alq = tabulate(p_alq)
-> p_pro = tabulate(p_pro)
+p_alq = tabulate(p_alq)
+p_pro = tabulate(p_pro)
 
 # consolidar los datos en un dataframe
-> df = data.frame(
+df = data.frame(
 	inquilinos=p_alq,
 	propietarios=p_pro,
 	inqxprop=p_alq/p_pro,

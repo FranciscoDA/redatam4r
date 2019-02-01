@@ -1,6 +1,5 @@
 *.o
 *.so
 symbols.rds
-include
-lib
-obj
+lib/
+obj/

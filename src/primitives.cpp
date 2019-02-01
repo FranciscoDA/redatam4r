@@ -3,7 +3,7 @@
 #include <string>
 #include <algorithm>
 
-#include "primitives.h"
+#include "redatam/primitives.h"
 
 namespace Redatam {
 

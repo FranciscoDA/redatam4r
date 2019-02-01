@@ -1,7 +1,7 @@
 #include <fstream>
 #include <string>
-#include "../primitives.h"
-#include "dictionary_descriptor.h"
+#include "redatam/primitives.h"
+#include "redatam/dic/dictionary_descriptor.h"
 
 namespace Redatam {
 

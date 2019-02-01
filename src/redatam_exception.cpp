@@ -1,4 +1,4 @@
-#include "redatam_exception.h"
+#include "redatam/redatam_exception.h"
 
 namespace Redatam {
 	Exception::Exception(const std::string& msg) : msg(msg) {}

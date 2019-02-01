@@ -2,9 +2,9 @@
 #include <string>
 #include <regex>
 #include <optional>
-#include "../primitives.h"
-#include "../util.h"
-#include "variable_descriptor.h"
+#include "redatam/primitives.h"
+#include "redatam/util.h"
+#include "redatam/dic/variable_descriptor.h"
 
 namespace Redatam {
 
