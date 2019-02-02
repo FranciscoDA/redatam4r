@@ -65,7 +65,7 @@ head(a$DPTO)
 description(a$DPTO)
 description(a$HOGAR$H23)
 
-h2417 = a$HOGAR$H2417[1:length(a$HOGAR$H2417)]
+h2417 = a$HOGAR$H2417[]
 
 # la variable h2417 indica si el hogar es alquilado o propiedad del encuestado
 # filtrar los elementos que deseamos (hogares alquilados y propios)

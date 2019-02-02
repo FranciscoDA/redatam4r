@@ -21,7 +21,7 @@ SEXP stream_to_R(const T& obj) {
 }
 
 extern "C" {
-SEXP read_redatam(SEXP dic_path_in) {
+SEXP _redatam4r_read_redatam(SEXP dic_path_in) {
 	Redatam::fs::path dic_path {CHAR(asChar(dic_path_in))};
 
 	ProtectedSEXP description_rsymbol = mkString("description");

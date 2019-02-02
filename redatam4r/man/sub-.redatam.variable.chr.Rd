@@ -4,7 +4,7 @@
 \alias{[.redatam.variable.chr}
 \title{Index a Redatam CHR variable. Triggers a RBF file read}
 \usage{
-\method{[}{redatam.variable.chr}(x, i)
+\method{[}{redatam.variable.chr}(x, ...)
 }
 \arguments{
 \item{x}{Object to index}

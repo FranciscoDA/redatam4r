@@ -5,7 +5,7 @@
 #include <R/Rinternals.h>
 
 extern "C" {
-	SEXP read_redatam(SEXP dic_path);
+	SEXP _redatam4r_read_redatam(SEXP dic_path);
 }
 
 #endif

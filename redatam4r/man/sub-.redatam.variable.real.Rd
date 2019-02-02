@@ -4,7 +4,7 @@
 \alias{[.redatam.variable.real}
 \title{Index a Redatam DBL variable. Triggers a RBF file read}
 \usage{
-\method{[}{redatam.variable.real}(x, i)
+\method{[}{redatam.variable.real}(x, ...)
 }
 \arguments{
 \item{x}{Object to index}

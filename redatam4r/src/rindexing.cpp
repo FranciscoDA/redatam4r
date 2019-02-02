@@ -35,9 +35,9 @@ void configure_factor(SEXP dst, SEXP src) {
 	}
 }
 
-std::string get_rbf_path(SEXP robj) { return CHAR(asChar(STRING_ELT(getAttrib(robj, mkString("data.path")), 0))); }
-size_t get_instance_len(SEXP robj) { return INTEGER_ELT(getAttrib(robj, mkString("instance.len")), 0); }
-int get_instance_num(SEXP robj) { return INTEGER_ELT(getAttrib(robj, mkString("instance.num")), 0); }
+std::string get_rbf_path(SEXP robj) { return CHAR(asChar(getAttrib(robj, mkString("data.path")))); }
+size_t get_instance_len(SEXP robj) { return asInteger(getAttrib(robj, mkString("instance.len"))); }
+int get_instance_num(SEXP robj) { return asInteger(getAttrib(robj, mkString("instance.num"))); }
 
 class StrIteratorImpl {
 private:
@@ -65,6 +65,11 @@ public:
 		++i;
 		return *this;
 	}
+	StrIteratorImpl operator++(int) {
+		auto copy = *this;
+		++i;
+		return copy;
+	}
 	bool operator!=(const StrIteratorImpl& other) {
 		return sexp == other.sexp and i == other.i;
 	}
@@ -77,65 +82,64 @@ StrIteratorImpl StrIterator(SEXP sexp) { return StrIteratorImpl(sexp); }
 int* IntIterator(SEXP sexp) { return INTEGER(sexp); }
 double* RealIterator(SEXP sexp) { return REAL(sexp); }
 
-template <typename F> struct ReadingFunctionSignature {
-	using type1 = void(*)(const int*, const int*, typename std::result_of<F(SEXP)>::type, Redatam::fs::path, size_t);
-	using type2 = void(*)(const int*, const int*, typename std::result_of<F(SEXP)>::type, Redatam::fs::path);
-};
-
 template<typename F, typename NaType>
-SEXP get_rvector(SEXP robj, SEXP indices, F&& iter, typename ReadingFunctionSignature<F>::type1 func, NaType na) {
+SEXP get_rvector_variable(SEXP robj, F&& iterator_generator, void (*rbf_reader)(typename std::result_of<F(SEXP)>::type, std::istream&, size_t, size_t), NaType na) {
 	int instance_len = get_instance_len(robj);
-	ProtectedSEXP ans = allocVector(TYPEOF(robj), length(indices));
-	auto output = iter(ans);
-	const int* first = INTEGER_RO(indices);
+	int count        = get_instance_num(robj);
+	std::string path = get_rbf_path(robj);
 
+	ProtectedSEXP ans = allocVector(TYPEOF(robj), count);
+	auto output = iterator_generator(ans);
 	std::fill(output, output+length(ans), na);
-	func(first, first+length(indices), output, get_rbf_path(robj), instance_len);
+
+	std::fstream stream(path, std::ios_base::in|std::ios_base::binary);
+	rbf_reader(output, stream, count, instance_len);
 
 	if (TYPEOF(ans) == INTSXP)
 		configure_factor(ans, robj);
-
 	return ans;
 }
 template<typename F, typename NaType>
-SEXP get_rvector(SEXP robj, SEXP indices, F&& iter, typename ReadingFunctionSignature<F>::type2 func, NaType na) {
-	ProtectedSEXP ans = allocVector(TYPEOF(robj), length(indices));
-	auto output = iter(ans);
-	const int* first = INTEGER_RO(indices);
+SEXP get_rvector_fixed(SEXP robj, F&& iterator_generator, void (*rbf_reader)(typename std::result_of<F(SEXP)>::type, std::istream&, size_t), NaType na) {
+	int count        = get_instance_num(robj);
+	std::string path = get_rbf_path(robj);
 
+	ProtectedSEXP ans = allocVector(TYPEOF(robj), count);
+	auto output = iterator_generator(ans);
 	std::fill(output, output+length(ans), na);
-	func(first, first+length(indices), output, get_rbf_path(robj));
+
+	std::fstream stream(path, std::ios_base::in|std::ios_base::binary);
+	rbf_reader(output, stream, count);
 
 	if (TYPEOF(ans) == INTSXP)
 		configure_factor(ans, robj);
-
 	return ans;
 }
 
 extern "C" {
 
-SEXP bin_get_rvector(SEXP robj, SEXP indices) {
-	return get_rvector(robj, indices, &IntIterator, &Redatam::read_bin_rbf, NA_INTEGER);
+SEXP _redatam4r_bin_get_rvector(SEXP robj) {
+	return get_rvector_variable(robj, &IntIterator, &Redatam::read_bin_rbf, NA_INTEGER);
 }
 
-SEXP pck_get_rvector(SEXP robj, SEXP indices) {
-	return get_rvector(robj, indices, &IntIterator, &Redatam::read_pck_rbf, NA_INTEGER);
+SEXP _redatam4r_pck_get_rvector(SEXP robj) {
+	return get_rvector_variable(robj, &IntIterator, &Redatam::read_pck_rbf, NA_INTEGER);
 }
 
-SEXP chr_get_rvector(SEXP robj, SEXP indices) {
-	return get_rvector(robj, indices, &StrIterator, &Redatam::read_chr_rbf, NA_STRING);
+SEXP _redatam4r_chr_get_rvector(SEXP robj) {
+	return get_rvector_variable(robj, &StrIterator, &Redatam::read_chr_rbf<StrIteratorImpl>, NA_STRING);
 }
 
-SEXP int_get_rvector(SEXP robj, SEXP indices) {
-	return get_rvector(robj, indices, &IntIterator, &Redatam::read_int_rbf, NA_INTEGER);
+SEXP _redatam4r_int_get_rvector(SEXP robj) {
+	return get_rvector_fixed(robj, &IntIterator, &Redatam::read_int_rbf<int*>, NA_INTEGER);
 }
 
-SEXP lng_get_rvector(SEXP robj, SEXP indices) {
-	return get_rvector(robj, indices, &IntIterator, &Redatam::read_long_rbf, NA_INTEGER);
+SEXP _redatam4r_lng_get_rvector(SEXP robj) {
+	return get_rvector_fixed(robj, &IntIterator, &Redatam::read_long_rbf<int*>, NA_INTEGER);
 }
 
-SEXP real_get_rvector(SEXP robj, SEXP indices) {
-	return get_rvector(robj, indices, &RealIterator, &Redatam::read_double_rbf, NA_REAL);
+SEXP _redatam4r_real_get_rvector(SEXP robj) {
+	return get_rvector_fixed(robj, &RealIterator, &Redatam::read_double_rbf<double*>, NA_REAL);
 }
 
 }

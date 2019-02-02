@@ -4,7 +4,7 @@
 \alias{[.redatam.variable.pck}
 \title{Index a Redatam PCK variable. Triggers a RBF file read. Note that the returned object size may be much greater than the size of the RBF file.}
 \usage{
-\method{[}{redatam.variable.pck}(x, i)
+\method{[}{redatam.variable.pck}(x, ...)
 }
 \arguments{
 \item{x}{Object to index}

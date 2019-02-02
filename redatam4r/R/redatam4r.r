@@ -1,9 +1,9 @@
 #' Read a Redatam database
 #'
 #' @param dic_path Path to the .dic file of the database
-#' @useDynLib redatam4r read_redatam
+#' @useDynLib redatam4r _redatam4r_read_redatam
 #' @export
-read.redatam <- function(dic_path) .Call("read_redatam", dic_path)
+read.redatam <- function(dic_path) .Call("_redatam4r_read_redatam", dic_path)
 
 #' Describe a Redatam object (database, entity or variable), as seen by libredatam
 #'
@@ -36,21 +36,8 @@ description.redatam.variable.dbl <- function(x) cat(attr(x, "description"))
 description.redatam.variable.pck <- function(x) cat(attr(x, "description"))
 
 
-variable_indexing <- function(x, i, funcname) {
-	if (is.logical(i)) {
-		i <- which(i);
-	}
-	i <- as.integer(i);
-	negindx = all(i <= 0)
-	posindx = any(i >= 0)
-	if (negindx && posindx) {
-		stop('only 0\'s may be mixed with negative subscripts')
-	}
-	if (negindx) {
-		i = (1:length(x))[i]
-	}
-	i = i[i != 0]
-	.Call(funcname, x, as.integer(i-1))
+variable_indexing <- function(x, funcname, ...) {
+	.Call(funcname, x)[...];
 }
 
 #' Index a Redatam BIN variable. Triggers a RBF file read. Note that the returned object size may be much greater than the size of the RBF file.
@@ -58,36 +45,36 @@ variable_indexing <- function(x, i, funcname) {
 #' @param x Object to index
 #' @param i Indices (can be numeric, integer or boolean)
 #' @return Returns an integer vector (which can have factors) with the elements from the RBF file.
-#' @useDynLib redatam4r bin_get_rvector
+#' @useDynLib redatam4r _redatam4r_bin_get_rvector
 #' @export
-'[.redatam.variable.bin'  <- function(x, i) variable_indexing(x, i, 'bin_get_rvector')
+'[.redatam.variable.bin'  <- function(x, ...) variable_indexing(x, '_redatam4r_bin_get_rvector', ...)
 
 #' Index a Redatam PCK variable. Triggers a RBF file read. Note that the returned object size may be much greater than the size of the RBF file.
 #'
 #' @param x Object to index
 #' @param i Indices (can be numeric, integer or boolean)
 #' @return Returns an integer vector (which can have factors) with the elements from the RBF file.
-#' @useDynLib redatam4r pck_get_rvector
+#' @useDynLib redatam4r _redatam4r_pck_get_rvector
 #' @export
-'[.redatam.variable.pck'  <- function(x, i) variable_indexing(x, i, 'pck_get_rvector')
+'[.redatam.variable.pck'  <- function(x, ...) variable_indexing(x, '_redatam4r_pck_get_rvector', ...)
 
 #' Index a Redatam CHR variable. Triggers a RBF file read
 #'
 #' @param x Object to index
 #' @param i Indices (can be numeric, integer or boolean)
 #' @return Returns a character vector with the elements from the RBF file.
-#' @useDynLib redatam4r chr_get_rvector
+#' @useDynLib redatam4r _redatam4r_chr_get_rvector
 #' @export
-'[.redatam.variable.chr'  <- function(x, i) variable_indexing(x, i, 'chr_get_rvector')
+'[.redatam.variable.chr'  <- function(x, ...) variable_indexing(x, '_redatam4r_chr_get_rvector', ...)
 
 #' Index a Redatam INT variable. Triggers a RBF file read
 #'
 #' @param x Object to index
 #' @param i Indices (can be numeric, integer or boolean)
 #' @return Returns an integer vector (which can have factors) with the elements from the RBF file.
-#' @useDynLib redatam4r int_get_rvector
+#' @useDynLib redatam4r _redatam4r_int_get_rvector
 #' @export
-'[.redatam.variable.int'  <- function(x, i) variable_indexing(x, i, 'int_get_rvector')
+'[.redatam.variable.int'  <- function(x, ...) variable_indexing(x, '_redatam4r_int_get_rvector', ...)
 
 
 #' Index a Redatam LNG variable. Triggers a RBF file read
@@ -95,9 +82,9 @@ variable_indexing <- function(x, i, funcname) {
 #' @param x Object to index
 #' @param i Indices (can be numeric, integer or boolean)
 #' @return Returns an integer vector (which can have factors) with the elements from the RBF file.
-#' @useDynLib redatam4r lng_get_rvector
+#' @useDynLib redatam4r _redatam4r_lng_get_rvector
 #' @export
-'[.redatam.variable.lng'  <- function(x, i) variable_indexing(x, i, 'lng_get_rvector')
+'[.redatam.variable.lng'  <- function(x, ...) variable_indexing(x, '_redatam4r_lng_get_rvector', ...)
 
 
 #' Index a Redatam DBL variable. Triggers a RBF file read
@@ -105,9 +92,11 @@ variable_indexing <- function(x, i, funcname) {
 #' @param x Object to index
 #' @param i Indices (can be numeric, integer or boolean)
 #' @return Returns a numeric vector with the elements from the RBF file.
-#' @useDynLib redatam4r real_get_rvector
+#' @useDynLib redatam4r _redatam4r_real_get_rvector
 #' @export
-'[.redatam.variable.real' <- function(x, i) variable_indexing(x, i, 'real_get_rvector')
+'[.redatam.variable.real' <- function(x, ...) variable_indexing(x, '_redatam4r_real_get_rvector', ...)
+
+
 
 assign_indexing <- function(x, i, val) stop('writing to redatam objects is not allowed')
 

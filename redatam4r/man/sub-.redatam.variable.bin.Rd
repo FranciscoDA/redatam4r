@@ -4,7 +4,7 @@
 \alias{[.redatam.variable.bin}
 \title{Index a Redatam BIN variable. Triggers a RBF file read. Note that the returned object size may be much greater than the size of the RBF file.}
 \usage{
-\method{[}{redatam.variable.bin}(x, i)
+\method{[}{redatam.variable.bin}(x, ...)
 }
 \arguments{
 \item{x}{Object to index}

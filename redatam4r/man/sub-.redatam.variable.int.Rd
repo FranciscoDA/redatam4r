@@ -4,7 +4,7 @@
 \alias{[.redatam.variable.int}
 \title{Index a Redatam INT variable. Triggers a RBF file read}
 \usage{
-\method{[}{redatam.variable.int}(x, i)
+\method{[}{redatam.variable.int}(x, ...)
 }
 \arguments{
 \item{x}{Object to index}
