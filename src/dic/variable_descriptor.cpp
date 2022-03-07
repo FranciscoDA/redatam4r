@@ -19,7 +19,7 @@ std::optional<VariableDescriptor::Declaration> VariableDescriptor::Declaration::
 		else if (match[1] == "LNG") t = Declaration::Type::LNG;
 		else if (match[1] == "PCK") t = Declaration::Type::PCK;
 		std::string p = match[2];
-		std::replace(begin(p), end(p), '\\', fs::path::preferred_separator);
+		std::replace(begin(p), end(p), fs::path::value_type('\\'), fs::path::preferred_separator);
 		size_t s = std::stoi(match[3]);
 		return Declaration{t, p, s};
 	}
